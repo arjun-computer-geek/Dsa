@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scramble Search</title>
+    <style>
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <input type="text" id="searchInput" placeholder="Enter search term...">
+    <div id="resultsContainer"></div>
+
+    <script type="text/javascript">
+        const array = ["apple", "banana", "cherry", "date", "elderberry"];
+
+        function isScrambledMatch(word, searchTerm) {
+            const wordChars = word.toLowerCase().split("").sort().join("");
+            const searchChars = searchTerm.toLowerCase().split("").sort().join("");
+            let i = 0, j = 0;
+
+            // Check if all characters in searchChars are found in order in wordChars
+            while (i < wordChars.length && j < searchChars.length) {
+                if (wordChars[i] === searchChars[j]) j++;
+                i++;
+            }
+            return j === searchChars.length;
+        }
+
+        function displayResults(searchTerm) {
+            const container = document.getElementById("resultsContainer");
+            container.innerHTML = ""; // Clear previous results
+
+            array.forEach(item => {
+                const itemElement = document.createElement("div");
+
+                if (searchTerm && isScrambledMatch(item, searchTerm)) {
+                    // Highlight the matched part in the item
+                    const regex = new RegExp(`[${searchTerm}]`, "gi");
+                    itemElement.innerHTML = item.replace(regex, (match) => `<span class='highlight'>${match}</span>`);
+                } else {
+                    itemElement.textContent = item;
+                }
+
+                container.appendChild(itemElement);
+            });
+        }
+
+        // Listen for input changes to perform search and display results
+        document.getElementById("searchInput").addEventListener("input", (event) => {
+            const searchTerm = event.target.value.trim();
+            displayResults(searchTerm);
+        });
+
+    </script>
+</body>
+
+</html>

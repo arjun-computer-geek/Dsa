@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Optimized Scramble Search</title>
+  <style>
+    .highlight {
+      background-color: yellow;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <input type="text" id="searchInput" placeholder="Enter search term...">
+  <div id="resultsContainer"></div>
+
+  <script>
+    const array = ["apple", "banana", "cherry", "date", "elderberry"];
+    let preprocessedArray = [];
+
+    // Preprocess the array to store character counts for each word
+    function preprocessArray(arr) {
+      return arr.map(word => ({
+        word,
+        charCount: getCharFrequency(word)
+      }));
+    }
+
+    // Helper function to count frequency of each character in a string
+    function getCharFrequency(str) {
+      const freq = {};
+      for (let char of str.toLowerCase()) {
+        freq[char] = (freq[char] || 0) + 1;
+      }
+      return freq;
+    }
+
+    // Check if all characters in search term exist in the word
+    function isScrambledMatch(wordFreq, searchFreq) {
+      for (let char in searchFreq) {
+        if (!wordFreq[char] || wordFreq[char] < searchFreq[char]) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // Display and highlight results
+    function displayResults(searchTerm) {
+      const container = document.getElementById("resultsContainer");
+      container.innerHTML = ""; // Clear previous results
+
+      const searchFreq = getCharFrequency(searchTerm);
+      
+      preprocessedArray.forEach(item => {
+        if (searchTerm && isScrambledMatch(item.charCount, searchFreq)) {
+          const itemElement = document.createElement("div");
+          // Highlight only matched characters in the word
+          itemElement.innerHTML = item.word.replace(new RegExp(`[${searchTerm}]`, "gi"), 
+            match => `<span class='highlight'>${match}</span>`);
+          container.appendChild(itemElement);
+        }
+      });
+    }
+
+    // Preprocess array for character frequencies
+    preprocessedArray = preprocessArray(array);
+
+    // Listen for input changes to perform search and display results
+    document.getElementById("searchInput").addEventListener("input", (event) => {
+      const searchTerm = event.target.value.trim();
+      displayResults(searchTerm);
+    });
+  </script>
+</body>
+</html>
